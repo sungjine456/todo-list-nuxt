@@ -67,38 +67,38 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .form {
   margin-bottom: 10px;
-}
 
-.form input {
-  height: 19px;
-  margin-right: 5px;
-}
+  input {
+    height: 19px;
+    margin-right: 5px;
+  }
 
-.form button {
-  height: 25px;
+  button {
+    height: 25px;
+  }
 }
 
 .item {
   display: flex;
   justify-content: space-between;
-}
 
-.item span,
-.item input {
-  width: 125px;
-}
+  span {
+    width: 125px;
+    cursor: pointer;
+    border: solid white 1px;
+    border-radius: 3px;
 
-.item span {
-  cursor: pointer;
-  border: solid white 1px;
-  border-radius: 3px;
-}
+    &:hover {
+      text-decoration: underline;
+      border: solid black 1px;
+    }
+  }
 
-.item span:hover {
-  text-decoration: underline;
-  border: solid black 1px;
+  input {
+    width: 125px;
+  }
 }
 </style>
