@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="form">
-      <input v-model="value" />
+      <input v-model="value" @keypress.enter="add" />
       <button @click="add">추가</button>
     </div>
     <div v-if="!list.length">
@@ -17,12 +17,12 @@
       </template>
       <template v-else>
         <span @click="showUpdate(i)">{{ item }}</span>
-        <div class="buttons">
+        <div v-show="!isUpdating" class="buttons">
           <div>
             <button @click="showUpdate(i)">수정</button>
             <button @click="remove(i)">삭제</button>
           </div>
-          <div v-show="!isUpdating" class="arrows">
+          <div class="arrows">
             <button class="arrow" :disabled="i === 0" @click="clickUp(i)">
               ↑
             </button>
@@ -55,9 +55,11 @@ const add = () => {
 };
 
 const remove = (index: number) => {
-  list.value.splice(index, 1);
+  if (window.confirm("삭제 하시겠습니까?")) {
+    list.value.splice(index, 1);
 
-  syncStorage();
+    syncStorage();
+  }
 };
 
 const update = (index: number) => {
@@ -128,6 +130,7 @@ onMounted(() => {
 .item {
   display: flex;
   justify-content: space-between;
+  height: 24px;
 
   span {
     width: 170px;
