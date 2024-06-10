@@ -27,10 +27,10 @@
 </template>
 
 <script setup lang="ts">
-const target = ref("");
-const indexToUpdate = ref(-1);
-const value = ref("");
-const list = ref([]);
+const target = ref<string>("");
+const indexToUpdate = ref<number>(-1);
+const value = ref<string>("");
+const list = ref<string[]>([]);
 
 const add = () => {
   list.value.push(value.value);
@@ -39,13 +39,13 @@ const add = () => {
   syncStorage();
 };
 
-const remove = (index) => {
+const remove = (index: number) => {
   list.value.splice(index, 1);
 
   syncStorage();
 };
 
-const update = (index) => {
+const update = (index: number) => {
   list.value.splice(index, 1, target.value);
   indexToUpdate.value = -1;
   target.value = "";
@@ -53,7 +53,7 @@ const update = (index) => {
   syncStorage();
 };
 
-const showUpdate = (index) => {
+const showUpdate = (index: number) => {
   indexToUpdate.value = index;
   target.value = list.value[index];
 };
@@ -63,7 +63,7 @@ const syncStorage = () => {
 };
 
 onMounted(() => {
-  list.value = JSON.parse(localStorage.getItem("list")) ?? [];
+  list.value = JSON.parse(localStorage.getItem("list") ?? "") ?? [];
 });
 </script>
 
