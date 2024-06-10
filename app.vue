@@ -2,7 +2,7 @@
   <NuxtPage />
 </template>
 
-<style>
+<style lang="scss">
 html {
   height: 100%;
 }
@@ -18,5 +18,13 @@ body {
   align-items: center;
   width: 100%;
   height: 100%;
+}
+
+button {
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+  }
 }
 </style>

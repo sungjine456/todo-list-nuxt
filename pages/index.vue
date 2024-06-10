@@ -12,14 +12,28 @@
         <input v-model="target" />
         <div>
           <button @click="update(i)">확인</button>
-          <button @click="indexToUpdate = -1">취소</button>
+          <button @click="cancelUpdate()">취소</button>
         </div>
       </template>
       <template v-else>
         <span @click="showUpdate(i)">{{ item }}</span>
-        <div>
-          <button @click="showUpdate(i)">수정</button>
-          <button @click="remove(i)">삭제</button>
+        <div class="buttons">
+          <div>
+            <button @click="showUpdate(i)">수정</button>
+            <button @click="remove(i)">삭제</button>
+          </div>
+          <div v-show="!isUpdating" class="arrows">
+            <button class="arrow" :disabled="i === 0" @click="clickUp(i)">
+              ↑
+            </button>
+            <button
+              class="arrow"
+              :disabled="i === list.length - 1"
+              @click="clickDown(i)"
+            >
+              ↓
+            </button>
+          </div>
         </div>
       </template>
     </div>
@@ -31,6 +45,7 @@ const target = ref<string>("");
 const indexToUpdate = ref<number>(-1);
 const value = ref<string>("");
 const list = ref<string[]>([]);
+const isUpdating = ref<boolean>(false);
 
 const add = () => {
   list.value.push(value.value);
@@ -49,6 +64,7 @@ const update = (index: number) => {
   list.value.splice(index, 1, target.value);
   indexToUpdate.value = -1;
   target.value = "";
+  isUpdating.value = false;
 
   syncStorage();
 };
@@ -56,10 +72,36 @@ const update = (index: number) => {
 const showUpdate = (index: number) => {
   indexToUpdate.value = index;
   target.value = list.value[index];
+  isUpdating.value = true;
+};
+
+const cancelUpdate = () => {
+  indexToUpdate.value = -1;
+  isUpdating.value = false;
 };
 
 const syncStorage = () => {
   localStorage.setItem("list", JSON.stringify(list.value));
+};
+
+const clickUp = (index: number) => {
+  if (index !== 0) {
+    changeValue(index, index - 1);
+  }
+};
+
+const clickDown = (index: number) => {
+  if (index !== list.value.length - 1) {
+    changeValue(index, index + 1);
+  }
+};
+
+const changeValue = (target: number, next: number) => {
+  const temp = list.value[next];
+  list.value[next] = list.value[target];
+  list.value[target] = temp;
+
+  syncStorage();
 };
 
 onMounted(() => {
@@ -69,9 +111,11 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .form {
+  display: flex;
   margin-bottom: 10px;
 
   input {
+    width: 225px;
     height: 19px;
     margin-right: 5px;
   }
@@ -86,7 +130,7 @@ onMounted(() => {
   justify-content: space-between;
 
   span {
-    width: 125px;
+    width: 170px;
     cursor: pointer;
     border: solid white 1px;
     border-radius: 3px;
@@ -98,7 +142,29 @@ onMounted(() => {
   }
 
   input {
-    width: 125px;
+    width: 170px;
+  }
+
+  .buttons {
+    display: flex;
+    position: relative;
+
+    .arrows {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      position: absolute;
+      right: -45px;
+
+      .arrow {
+        border-radius: 10px;
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        font-size: 13px;
+        line-height: 0;
+      }
+    }
   }
 }
 </style>
