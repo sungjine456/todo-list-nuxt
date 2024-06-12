@@ -21,8 +21,14 @@
               red: secondIdx === 0,
               blue: secondIdx === 6,
               today:
-                day === today && month === currentMonth && year === currentYear
+                day === today && month === currentMonth && year === currentYear,
+              target:
+                !(
+                  (idx === 0 && day >= lastMonthStart) ||
+                  (dates.length - 1 === idx && nextMonthStart > day)
+                ) && day === target
             }"
+            @click="(e) => changeTarget(e.target as Element, day)"
           >
             {{ day }}
           </td>
@@ -33,6 +39,8 @@
 </template>
 
 <script lang="ts" setup>
+const emit = defineEmits(["changedTarget"]);
+
 const days = ["일", "월", "화", "수", "목", "금", "토"];
 const dates = ref<number[][]>([]);
 const currentYear = ref<number>(0);
@@ -42,6 +50,7 @@ const month = ref<number>(0);
 const lastMonthStart = ref<number>(0);
 const nextMonthStart = ref<number>(0);
 const today = ref<number>(0);
+const target = ref<number>(0);
 
 const now = new Date();
 currentYear.value = now.getFullYear();
@@ -49,6 +58,7 @@ currentMonth.value = now.getMonth() + 1;
 year.value = currentYear.value;
 month.value = currentMonth.value;
 today.value = now.getDate();
+target.value = today.value;
 
 const calculateDate = (arg: number = 0) => {
   if (arg < 0) {
@@ -133,8 +143,22 @@ const getMonthOfDays = (
   return dates;
 };
 
+const changeTarget = (t: Element | null, day: number) => {
+  // TODO: 이전 달이나 다음 달의 날짜를 누르면 해당 달로 이동하도록 수정하면 좋을 듯
+  if (!t?.classList.contains("gray")) {
+    target.value = day;
+
+    emit(
+      "changedTarget",
+      new Date(`${currentYear.value}-${currentMonth.value}-${day}`)
+    );
+  }
+};
+
 onMounted(() => {
   calculateDate();
+
+  emit("changedTarget", now);
 });
 </script>
 
@@ -156,21 +180,31 @@ onMounted(() => {
   table {
     text-align: center;
 
-    .gray {
-      color: gray !important;
-    }
+    td {
+      cursor: pointer;
+      border: 1px solid white;
 
-    .red {
-      color: red;
-    }
+      &.gray {
+        cursor: default;
+        color: gray !important;
+      }
 
-    .blue {
-      color: blue;
-    }
+      &.red {
+        color: red;
+      }
 
-    .today {
-      border: 1px solid skyblue;
-      border-radius: 7px;
+      &.blue {
+        color: blue;
+      }
+
+      &.today {
+        text-decoration: underline;
+      }
+
+      &.target {
+        border-color: skyblue;
+        border-radius: 7px;
+      }
     }
   }
 }

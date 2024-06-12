@@ -11,6 +11,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "dayjs": "^1.11.11",
     "nuxt": "^3.11.2",
     "sass": "^1.77.4",
     "sass-loader": "^14.2.1",
