@@ -24,11 +24,7 @@
                 day === now.date() &&
                 targetDate.month() === now.month() &&
                 targetDate.year() === now.year(),
-              target:
-                !(
-                  (idx === 0 && day >= lastMonthStart) ||
-                  (dates.length - 1 === idx && day < 20)
-                ) && day === targetDate.date()
+              target: day === targetDate.date()
             }"
             @click="(e) => changeTarget(e.target as Element, day)"
           >
