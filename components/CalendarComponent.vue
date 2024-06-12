@@ -17,7 +17,7 @@
             :class="{
               gray:
                 (idx === 0 && day >= lastMonthStart) ||
-                (dates.length - 1 === idx && day < 8),
+                (idx >= dates.length - 2 && day < 20),
               red: secondIdx === 0,
               blue: secondIdx === 6,
               today:
@@ -27,7 +27,7 @@
               target:
                 !(
                   (idx === 0 && day >= lastMonthStart) ||
-                  (dates.length - 1 === idx && day < 8)
+                  (dates.length - 1 === idx && day < 20)
                 ) && day === targetDate.date()
             }"
             @click="(e) => changeTarget(e.target as Element, day)"
@@ -100,6 +100,19 @@ const getMonthOfDays = (
 
   if (weekOfDays.length > 0) dates.push(weekOfDays);
 
+  if (dates.length < 6) {
+    let lastNext = dates[dates.length - 1][6] + 1;
+    weekOfDays = [];
+
+    if (lastNext > 27) lastNext = 1;
+
+    for (let i = lastNext; i < lastNext + 7; i++) {
+      weekOfDays.push(i);
+    }
+
+    dates.push(weekOfDays);
+  }
+
   return dates;
 };
 
@@ -121,11 +134,15 @@ onMounted(() => {
 .calendar {
   display: flex;
   flex-direction: column;
+  border: 1px solid gray;
+  border-radius: 7px;
 
   .handler {
     display: flex;
     justify-content: center;
+    padding-bottom: 10px;
     margin: 10px;
+    border-bottom: 1px solid gray;
 
     button {
       margin: 0 5px;
@@ -138,10 +155,12 @@ onMounted(() => {
     td {
       cursor: pointer;
       border: 1px solid white;
+      border-radius: 7px;
 
       &.gray {
         cursor: default;
         color: gray !important;
+        border-color: white !important;
       }
 
       &.red {
@@ -153,12 +172,17 @@ onMounted(() => {
       }
 
       &.today {
+        font-weight: 700;
+        color: green;
         text-decoration: underline;
       }
 
       &.target {
         border-color: skyblue;
-        border-radius: 7px;
+      }
+
+      &:hover {
+        border-color: red;
       }
     }
   }

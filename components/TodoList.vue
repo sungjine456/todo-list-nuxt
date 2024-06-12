@@ -138,12 +138,12 @@ watch(props, (n) => {
 <style lang="scss" scoped>
 .form {
   display: flex;
+  justify-content: space-between;
   margin-bottom: 10px;
 
   input {
-    width: 225px;
+    width: 229px;
     height: 19px;
-    margin-right: 5px;
   }
 
   button {
