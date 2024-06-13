@@ -13,7 +13,7 @@ const WorkItemList = () => {
     lastIndex = parseInt(localStorage.getItem("last-work-index") ?? "0");
     map = new Map(JSON.parse(localStorage.getItem("work-list") ?? '""'));
 
-    return new Map(map);
+    return getMap();
   };
 
   const getMap = (): Map<number, WorkItem> => {
@@ -25,7 +25,7 @@ const WorkItemList = () => {
 
     syncData();
 
-    return new Map(map);
+    return getMap();
   };
 
   const update = (index: number, work: WorkItem): Map<number, WorkItem> => {
@@ -33,7 +33,7 @@ const WorkItemList = () => {
 
     syncData();
 
-    return new Map(map);
+    return getMap();
   };
 
   const remove = (index: number): Map<number, WorkItem> => {
@@ -41,7 +41,7 @@ const WorkItemList = () => {
 
     syncData();
 
-    return new Map(map);
+    return getMap();
   };
 
   const changeOrder = (target: number, next: number): Map<number, WorkItem> => {
@@ -51,7 +51,7 @@ const WorkItemList = () => {
 
     syncData();
 
-    return new Map(map);
+    return getMap();
   };
 
   const syncData = () => {

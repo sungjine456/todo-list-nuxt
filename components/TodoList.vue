@@ -4,10 +4,10 @@
       <input v-model="work" @keypress.enter="add" />
       <button @click="add">추가</button>
     </div>
-    <div v-if="!map.size">
+    <div v-if="!workMap.size">
       <p class="empty">비었습니다.</p>
     </div>
-    <div v-for="(key, i) in map.keys()" :key="key" class="item">
+    <div v-for="(key, i) in workMap.keys()" :key="key" class="item">
       <template v-if="indexToUpdate === key">
         <input v-model="updatedWork" />
         <div>
@@ -16,8 +16,8 @@
         </div>
       </template>
       <template v-else>
-        <span @click="showUpdate(key)">{{ map.get(key)?.work }}</span>
-        <div v-show="!isUpdating" class="buttons">
+        <span @click="showUpdate(key)">{{ workMap.get(key)?.work }}</span>
+        <div v-show="indexToUpdate >= 0" class="buttons">
           <div>
             <button @click="showUpdate(key)">수정</button>
             <button @click="remove(key)">삭제</button>
@@ -28,7 +28,7 @@
             </button>
             <button
               class="arrow"
-              :disabled="i === map.size - 1"
+              :disabled="i === workMap.size - 1"
               @click="clickDown(i)"
             >
               ↓
@@ -48,17 +48,17 @@ const props = defineProps({
   targetDate: Dayjs
 });
 
+const workItemList = WorkItemList();
+
+const work = ref<string>("");
 const updatedWork = ref<string>("");
 const indexToUpdate = ref<number>(-1);
-const work = ref<string>("");
-const isUpdating = ref<boolean>(false);
 const targetedDate = ref<Dayjs | undefined>(props.targetDate);
-const workItemList = WorkItemList();
-const map = ref<Map<number, WorkItem>>(new Map());
+const workMap = ref<Map<number, WorkItem>>(new Map());
 
 const add = () => {
-  const item = getItem(work.value);
-  setMap(workItemList.add(item));
+  setMap(workItemList.add(createWorkItem(work.value)));
+
   work.value = "";
 };
 
@@ -69,40 +69,37 @@ const remove = (index: number) => {
 };
 
 const update = (index: number) => {
-  setMap(workItemList.update(index, getItem(updatedWork.value)));
+  setMap(workItemList.update(index, createWorkItem(updatedWork.value)));
   indexToUpdate.value = -1;
   updatedWork.value = "";
-  isUpdating.value = false;
 };
 
 const showUpdate = (index: number) => {
   indexToUpdate.value = index;
-  updatedWork.value = map.value.get(index)?.work ?? "";
-  isUpdating.value = true;
+  updatedWork.value = workMap.value.get(index)?.work ?? "";
 };
 
 const cancelUpdate = () => {
   indexToUpdate.value = -1;
-  isUpdating.value = false;
 };
 
 const clickUp = (index: number) => {
   if (index !== 0) {
-    const keys: number[] = [...map.value.keys()];
+    const keys: number[] = [...workMap.value.keys()];
 
     setMap(workItemList.changeOrder(keys[index], keys[index - 1]));
   }
 };
 
 const clickDown = (index: number) => {
-  if (index !== map.value.size - 1) {
-    const keys: number[] = [...map.value.keys()];
+  if (index !== workMap.value.size - 1) {
+    const keys: number[] = [...workMap.value.keys()];
 
     setMap(workItemList.changeOrder(keys[index], keys[index + 1]));
   }
 };
 
-const getItem = (work: string): WorkItem => {
+const createWorkItem = (work: string): WorkItem => {
   return { work: work, date: targetedDate.value };
 };
 
@@ -113,6 +110,7 @@ const setMap = (newMap: Map<number, WorkItem>) => {
 
   newMap.forEach((v, k) => {
     const d: Dayjs | undefined = v.date && dayjs(v.date);
+
     if (
       (!d && d === date) ||
       (d?.year?.() === date?.year?.() &&
@@ -122,7 +120,7 @@ const setMap = (newMap: Map<number, WorkItem>) => {
       filteredMap.set(k, v);
   });
 
-  map.value = filteredMap;
+  workMap.value = filteredMap;
 };
 
 onMounted(() => {

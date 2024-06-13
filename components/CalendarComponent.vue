@@ -16,7 +16,7 @@
             :key="secondIdx"
             :class="{
               gray:
-                (idx === 0 && day >= lastMonthStart) ||
+                (idx === 0 && secondIdx < monthStartDay) ||
                 (idx >= dates.length - 2 && day < 20),
               red: secondIdx === 0,
               blue: secondIdx === 6,
@@ -46,7 +46,7 @@ const now = dayjs();
 
 const dates = ref<number[][]>([]);
 const targetDate = ref<Dayjs>(now);
-const lastMonthStart = ref<number>(0);
+const monthStartDay = ref<number>(0);
 
 const calculateCalender = (month: number = 0) => {
   targetDate.value = targetDate.value.add(month, "month");
@@ -54,8 +54,9 @@ const calculateCalender = (month: number = 0) => {
   const thisMonth = targetDate.value.set("date", 1);
   const previousMonth = targetDate.value.add(-1, "month");
 
+  monthStartDay.value = thisMonth.day();
+
   dates.value = getMonthOfDays(
-    thisMonth.day(),
     thisMonth.daysInMonth(),
     previousMonth.daysInMonth()
   );
@@ -64,49 +65,50 @@ const calculateCalender = (month: number = 0) => {
 };
 
 const getMonthOfDays = (
-  monthFirstDay: number,
-  monthLastDate: number,
+  lastDate: number,
   prevMonthLastDate: number
 ): number[][] => {
   const dates: number[][] = [];
-  let weekOfDays: number[] = [];
+  let datesInWeek: number[] = [];
 
-  lastMonthStart.value = prevMonthLastDate - monthFirstDay + 1;
-
-  for (let i = lastMonthStart.value; i <= prevMonthLastDate; i++) {
-    weekOfDays.push(i);
+  for (
+    let i = prevMonthLastDate - monthStartDay.value + 1;
+    i <= prevMonthLastDate;
+    i++
+  ) {
+    datesInWeek.push(i);
   }
 
-  for (let i = 1; i <= monthLastDate; i++) {
-    weekOfDays.push(i);
+  for (let i = 1; i <= lastDate; i++) {
+    datesInWeek.push(i);
 
-    if (weekOfDays.length === 7) {
-      dates.push(weekOfDays);
-      weekOfDays = [];
+    if (datesInWeek.length === 7) {
+      dates.push(datesInWeek);
+      datesInWeek = [];
     }
   }
 
-  const len = weekOfDays.length;
+  const len = datesInWeek.length;
 
   if (len > 0 && len < 7) {
     for (let i = 1; i <= 7 - len; i++) {
-      weekOfDays.push(i);
+      datesInWeek.push(i);
     }
   }
 
-  if (weekOfDays.length > 0) dates.push(weekOfDays);
+  if (datesInWeek.length > 0) dates.push(datesInWeek);
 
   if (dates.length < 6) {
     let lastNext = dates[dates.length - 1][6] + 1;
-    weekOfDays = [];
+    datesInWeek = [];
 
     if (lastNext > 27) lastNext = 1;
 
     for (let i = lastNext; i < lastNext + 7; i++) {
-      weekOfDays.push(i);
+      datesInWeek.push(i);
     }
 
-    dates.push(weekOfDays);
+    dates.push(datesInWeek);
   }
 
   return dates;
