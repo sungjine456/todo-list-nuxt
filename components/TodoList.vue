@@ -42,13 +42,12 @@
 
 <script setup lang="ts">
 import dayjs, { Dayjs } from "dayjs";
-import { type WorkItem, WorkItemList } from "~/utils/WorkList";
+import { type WorkItem } from "~/utils/WorkList";
 
 const props = defineProps({
   targetDate: Dayjs
 });
-
-const workItemList = WorkItemList();
+const emit = defineEmits(["addOrRemoveWork"]);
 
 const work = ref<string>("");
 const updatedWork = ref<string>("");
@@ -57,19 +56,23 @@ const targetedDate = ref<Dayjs | undefined>(props.targetDate);
 const workMap = ref<Map<number, WorkItem>>(new Map());
 
 const add = () => {
-  setMap(workItemList.add(createWorkItem(work.value)));
+  setMap(useWorkList().value.add(createWorkItem(work.value)));
 
   work.value = "";
+
+  emit("addOrRemoveWork");
 };
 
 const remove = (index: number) => {
   if (window.confirm("삭제 하시겠습니까?")) {
-    setMap(workItemList.remove(index));
+    setMap(useWorkList().value.remove(index));
+
+    emit("addOrRemoveWork");
   }
 };
 
 const update = (index: number) => {
-  setMap(workItemList.update(index, createWorkItem(updatedWork.value)));
+  setMap(useWorkList().value.update(index, createWorkItem(updatedWork.value)));
   indexToUpdate.value = -1;
   updatedWork.value = "";
 };
@@ -87,7 +90,7 @@ const clickUp = (index: number) => {
   if (index !== 0) {
     const keys: number[] = [...workMap.value.keys()];
 
-    setMap(workItemList.changeOrder(keys[index], keys[index - 1]));
+    setMap(useWorkList().value.changeOrder(keys[index], keys[index - 1]));
   }
 };
 
@@ -95,7 +98,7 @@ const clickDown = (index: number) => {
   if (index !== workMap.value.size - 1) {
     const keys: number[] = [...workMap.value.keys()];
 
-    setMap(workItemList.changeOrder(keys[index], keys[index + 1]));
+    setMap(useWorkList().value.changeOrder(keys[index], keys[index + 1]));
   }
 };
 
@@ -124,7 +127,7 @@ const setMap = (newMap: Map<number, WorkItem>) => {
 };
 
 onMounted(() => {
-  setMap(workItemList.init());
+  setMap(useWorkList().value.getMap());
 });
 
 watch(
@@ -132,7 +135,7 @@ watch(
   (n: Dayjs | undefined) => {
     targetedDate.value = n;
 
-    setMap(workItemList.getMap());
+    setMap(useWorkList().value.getMap());
   }
 );
 </script>

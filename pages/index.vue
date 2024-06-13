@@ -20,6 +20,10 @@ const isMemo = ref<boolean>(true);
 const clickTabHandler = (memo: boolean) => {
   isMemo.value = memo;
 };
+
+onBeforeMount(() => {
+  useWorkList().value.init();
+});
 </script>
 
 <style lang="scss" scoped>

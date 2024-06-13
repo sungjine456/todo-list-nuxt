@@ -28,6 +28,7 @@
             }"
             @click="(e) => changeTarget(e.target as Element, day)"
           >
+            <span v-if="hasWork(day)" class="has">●</span>
             {{ day }}
           </td>
         </tr>
@@ -47,6 +48,7 @@ const now = dayjs();
 const dates = ref<number[][]>([]);
 const targetDate = ref<Dayjs>(now);
 const monthStartDay = ref<number>(0);
+const datesWithWork = ref<number[]>([]);
 
 const calculateCalender = (month: number = 0) => {
   targetDate.value = targetDate.value.add(month, "month");
@@ -60,6 +62,8 @@ const calculateCalender = (month: number = 0) => {
     thisMonth.daysInMonth(),
     previousMonth.daysInMonth()
   );
+
+  syncDatesWithWork();
 
   emit("changedTarget", dayjs(targetDate.value));
 };
@@ -123,6 +127,24 @@ const changeTarget = (t: Element | null, day: number) => {
   }
 };
 
+const syncDatesWithWork = () => {
+  const filteredDate: number[] = [];
+
+  useWorkList()
+    .value.getMap(targetDate.value.year(), targetDate.value.month())
+    .forEach((v) => {
+      if (v.date) filteredDate.push(dayjs(v.date).date());
+    });
+
+  datesWithWork.value = filteredDate;
+};
+
+const hasWork = (date: number): boolean => {
+  return datesWithWork.value.includes(date);
+};
+
+defineExpose({ syncDatesWithWork });
+
 onMounted(() => {
   calculateCalender();
 });
@@ -154,6 +176,7 @@ onMounted(() => {
       cursor: pointer;
       border: 1px solid white;
       border-radius: 7px;
+      position: relative;
 
       &.gray {
         cursor: default;
@@ -181,6 +204,14 @@ onMounted(() => {
 
       &:hover {
         border-color: red;
+      }
+
+      .has {
+        position: absolute;
+        font-size: 7px;
+        top: 0;
+        right: 2px;
+        color: aqua;
       }
     }
   }

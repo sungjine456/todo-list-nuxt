@@ -1,4 +1,7 @@
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
+
+dayjs.extend(isBetween);
 
 interface WorkItem {
   work: string;
@@ -16,8 +19,23 @@ const WorkItemList = () => {
     return getMap();
   };
 
-  const getMap = (): Map<number, WorkItem> => {
-    return new Map(map);
+  const getMap = (
+    year: number = -1,
+    month: number = -1
+  ): Map<number, WorkItem> => {
+    if (year < 0 || month < 0) return new Map(map);
+
+    const first = dayjs(`${year}-${month + 1}-1`);
+    const last = first.set("date", first.daysInMonth());
+    const filteredMap = new Map<number, WorkItem>();
+
+    map.forEach((v, k) => {
+      const d: Dayjs | undefined = v.date && dayjs(v.date);
+
+      if (d && d.isBetween(first, last)) filteredMap.set(k, v);
+    });
+
+    return filteredMap;
   };
 
   const add = (work: WorkItem): Map<number, WorkItem> => {
