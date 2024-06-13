@@ -129,10 +129,14 @@ onMounted(() => {
   setMap(workItemList.init());
 });
 
-watch(props, (n) => {
-  targetedDate.value = n.targetDate;
-  setMap(workItemList.getMap());
-});
+watch(
+  () => props.targetDate,
+  (n: Dayjs | undefined) => {
+    targetedDate.value = n;
+
+    setMap(workItemList.getMap());
+  }
+);
 </script>
 
 <style lang="scss" scoped>
