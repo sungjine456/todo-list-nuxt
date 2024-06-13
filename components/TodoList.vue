@@ -17,7 +17,7 @@
       </template>
       <template v-else>
         <span @click="showUpdate(key)">{{ workMap.get(key)?.work }}</span>
-        <div v-show="indexToUpdate >= 0" class="buttons">
+        <div v-show="indexToUpdate < 0" class="buttons">
           <div>
             <button @click="showUpdate(key)">수정</button>
             <button @click="remove(key)">삭제</button>
