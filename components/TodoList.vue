@@ -16,8 +16,14 @@
         </div>
       </template>
       <template v-else>
-        <span @click="checkWork(key)">{{ workMap.get(key)?.work }}</span>
-        <div v-if="workMap.get(key)?.checked" class="check"></div>
+        <div class="work">
+          <p @click="checkWork(key)">{{ workMap.get(key)?.work }}</p>
+          <div
+            v-if="workMap.get(key)?.checked"
+            class="check"
+            @click="checkWork(key)"
+          ></div>
+        </div>
         <div v-show="indexToUpdate < 0" class="buttons">
           <div>
             <button @click="showUpdate(key)">수정</button>
@@ -174,22 +180,27 @@ watch(
   justify-content: space-between;
   height: 24px;
 
-  span {
-    width: 170px;
-    cursor: pointer;
+  .work {
     border: solid white 1px;
     border-radius: 3px;
 
     &:hover {
       border: solid black 1px;
+      cursor: pointer;
     }
-  }
 
-  .check {
-    position: absolute;
-    border: 1px solid #6ec6fb;
-    width: 175px;
-    top: 11px;
+    p {
+      width: 175px;
+      height: 22px;
+      margin: 0;
+    }
+
+    .check {
+      position: absolute;
+      border: 1px solid #6ec6fb;
+      width: 175px;
+      top: 11px;
+    }
   }
 
   input {
