@@ -7,7 +7,7 @@
     <div v-if="!workMap.size">
       <p class="empty">비었습니다.</p>
     </div>
-    <div v-for="(key, i) in workMap.keys()" :key="key" class="item">
+    <div v-for="(key, i) in keys" :key="key" class="item">
       <template v-if="indexToUpdate === key">
         <input v-model="updatedWork" />
         <div>
@@ -54,6 +54,7 @@ const updatedWork = ref<string>("");
 const indexToUpdate = ref<number>(-1);
 const targetedDate = ref<Dayjs | undefined>(props.targetDate);
 const workMap = ref<Map<number, WorkItem>>(new Map());
+const keys = ref<number[]>([]);
 
 const add = () => {
   setMap(useWorkList().value.add(createWorkItem(work.value)));
@@ -88,17 +89,17 @@ const cancelUpdate = () => {
 
 const clickUp = (index: number) => {
   if (index !== 0) {
-    const keys: number[] = [...workMap.value.keys()];
-
-    setMap(useWorkList().value.changeOrder(keys[index], keys[index - 1]));
+    setMap(
+      useWorkList().value.changeOrder(keys.value[index], keys.value[index - 1])
+    );
   }
 };
 
 const clickDown = (index: number) => {
   if (index !== workMap.value.size - 1) {
-    const keys: number[] = [...workMap.value.keys()];
-
-    setMap(useWorkList().value.changeOrder(keys[index], keys[index + 1]));
+    setMap(
+      useWorkList().value.changeOrder(keys.value[index], keys.value[index + 1])
+    );
   }
 };
 
@@ -124,6 +125,7 @@ const setMap = (newMap: Map<number, WorkItem>) => {
   });
 
   workMap.value = filteredMap;
+  keys.value = Array.from(workMap.value.keys()).reverse();
 };
 
 onMounted(() => {
