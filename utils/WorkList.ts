@@ -6,6 +6,7 @@ dayjs.extend(isBetween);
 interface WorkItem {
   work: string;
   date: Dayjs | undefined;
+  checked: boolean;
 }
 
 const WorkItemList = () => {
@@ -38,8 +39,19 @@ const WorkItemList = () => {
     return filteredMap;
   };
 
-  const add = (work: WorkItem): Map<number, WorkItem> => {
-    map.set(lastIndex++, work);
+  const get = (index: number): WorkItem => {
+    return map.get(index)!;
+  };
+
+  const add = (
+    work: string,
+    date: Dayjs | undefined
+  ): Map<number, WorkItem> => {
+    map.set(lastIndex++, {
+      work,
+      date,
+      checked: false
+    });
 
     syncData();
 
@@ -80,6 +92,7 @@ const WorkItemList = () => {
   return {
     init,
     getMap,
+    get,
     add,
     update,
     remove,

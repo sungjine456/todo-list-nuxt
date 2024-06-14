@@ -16,7 +16,8 @@
         </div>
       </template>
       <template v-else>
-        <span @click="showUpdate(key)">{{ workMap.get(key)?.work }}</span>
+        <span @click="checkWork(key)">{{ workMap.get(key)?.work }}</span>
+        <div v-if="workMap.get(key)?.checked" class="check"></div>
         <div v-show="indexToUpdate < 0" class="buttons">
           <div>
             <button @click="showUpdate(key)">수정</button>
@@ -57,7 +58,7 @@ const workMap = ref<Map<number, WorkItem>>(new Map());
 const keys = ref<number[]>([]);
 
 const add = () => {
-  setMap(useWorkList().value.add(createWorkItem(work.value)));
+  setMap(useWorkList().value.add(work.value, targetedDate.value));
 
   work.value = "";
 
@@ -73,7 +74,9 @@ const remove = (index: number) => {
 };
 
 const update = (index: number) => {
-  setMap(useWorkList().value.update(index, createWorkItem(updatedWork.value)));
+  const work = useWorkList().value.get(index);
+  work.work = updatedWork.value;
+  setMap(useWorkList().value.update(index, work));
   indexToUpdate.value = -1;
   updatedWork.value = "";
 };
@@ -85,6 +88,12 @@ const showUpdate = (index: number) => {
 
 const cancelUpdate = () => {
   indexToUpdate.value = -1;
+};
+
+const checkWork = (index: number) => {
+  const work = useWorkList().value.get(index);
+  work.checked = !work.checked;
+  setMap(useWorkList().value.update(index, work));
 };
 
 const clickUp = (index: number) => {
@@ -101,10 +110,6 @@ const clickDown = (index: number) => {
       useWorkList().value.changeOrder(keys.value[index], keys.value[index + 1])
     );
   }
-};
-
-const createWorkItem = (work: string): WorkItem => {
-  return { work: work, date: targetedDate.value };
 };
 
 const setMap = (newMap: Map<number, WorkItem>) => {
@@ -165,6 +170,7 @@ watch(
 
 .item {
   display: flex;
+  position: relative;
   justify-content: space-between;
   height: 24px;
 
@@ -175,9 +181,15 @@ watch(
     border-radius: 3px;
 
     &:hover {
-      text-decoration: underline;
       border: solid black 1px;
     }
+  }
+
+  .check {
+    position: absolute;
+    border: 1px solid #6ec6fb;
+    width: 175px;
+    top: 11px;
   }
 
   input {
