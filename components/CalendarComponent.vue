@@ -28,8 +28,8 @@
             }"
             @click="(e) => changeTarget(e.target as Element, day)"
           >
-            <span v-if="hasWork(day)" class="has">●</span>
-            {{ day }}
+            <p>{{ day }}</p>
+            <p>{{ printDailyProgress(day) }}</p>
           </td>
         </tr>
       </tbody>
@@ -40,6 +40,11 @@
 <script lang="ts" setup>
 import dayjs, { Dayjs } from "dayjs";
 
+interface Progress {
+  checks: number;
+  works: number;
+}
+
 const emit = defineEmits(["changedTarget"]);
 
 const days = ["일", "월", "화", "수", "목", "금", "토"];
@@ -48,7 +53,7 @@ const now = dayjs();
 const dates = ref<number[][]>([]);
 const targetDate = ref<Dayjs>(now);
 const monthStartDay = ref<number>(0);
-const datesWithWork = ref<number[]>([]);
+const dailyProgresList = ref<Map<number, Progress>>(new Map());
 
 const calculateCalender = (month: number = 0) => {
   targetDate.value = targetDate.value.add(month, "month");
@@ -128,19 +133,40 @@ const changeTarget = (t: Element | null, day: number) => {
 };
 
 const syncDatesWithWork = () => {
-  const filteredDate: number[] = [];
+  const dailyList: Map<number, Progress> = new Map();
 
-  useWorkList()
-    .value.getMap(targetDate.value.year(), targetDate.value.month())
-    .forEach((v) => {
-      if (v.date) filteredDate.push(dayjs(v.date).date());
-    });
+  const listOfWorkInMonth = useWorkList().value.getMap(
+    targetDate.value.year(),
+    targetDate.value.month()
+  );
 
-  datesWithWork.value = filteredDate;
+  listOfWorkInMonth.forEach((v) => {
+    if (v.date) {
+      const date = dayjs(v.date).date();
+
+      let w = dailyList.get(date);
+
+      if (w) {
+        w.works += 1;
+
+        if (v.checked) {
+          w.checks += 1;
+        }
+      } else {
+        w = { checks: v.checked ? 1 : 0, works: 1 };
+      }
+
+      dailyList.set(date, w);
+    }
+  });
+
+  dailyProgresList.value = dailyList;
 };
 
-const hasWork = (date: number): boolean => {
-  return datesWithWork.value.includes(date);
+const printDailyProgress = (day: number): string => {
+  const w = dailyProgresList.value.get(day);
+
+  return w ? `${w.checks}/${w.works}` : "";
 };
 
 defineExpose({ syncDatesWithWork });
@@ -195,7 +221,10 @@ onMounted(() => {
       &.today {
         font-weight: 700;
         color: green;
-        text-decoration: underline;
+
+        p:first-child {
+          text-decoration: underline;
+        }
       }
 
       &.target {
@@ -206,12 +235,15 @@ onMounted(() => {
         border-color: red;
       }
 
-      .has {
-        position: absolute;
-        font-size: 7px;
-        top: 0;
-        right: 2px;
-        color: aqua;
+      p {
+        margin: 0;
+
+        &:last-child {
+          height: 13px;
+          color: black;
+          font-size: 10px;
+          font-weight: 700;
+        }
       }
     }
   }
