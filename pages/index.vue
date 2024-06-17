@@ -1,24 +1,31 @@
 <template>
   <main>
     <div class="tabs">
-      <button @click="clickTabHandler(true)">메모</button>
-      <button @click="clickTabHandler(false)">할 일</button>
+      <button @click="clickTabHandler(TAB.All)">전체</button>
+      <button @click="clickTabHandler(TAB.Memo)">메모</button>
+      <button @click="clickTabHandler(TAB.Work)">할 일</button>
     </div>
     <div class="body">
-      <memo v-if="isMemo" />
-      <work v-if="!isMemo" />
+      <TodoList v-if="selectedTab === TAB.All" />
+      <TodoList v-if="selectedTab === TAB.Memo" :only-memo="true" />
+      <work v-if="selectedTab === TAB.Work" />
     </div>
   </main>
 </template>
 
 <script lang="ts" setup>
-import memo from "@/pages/memo.vue";
 import work from "@/pages/work.vue";
 
-const isMemo = ref<boolean>(true);
+const TAB = {
+  All: "all",
+  Memo: "memo",
+  Work: "work"
+};
 
-const clickTabHandler = (memo: boolean) => {
-  isMemo.value = memo;
+const selectedTab = ref<string>(TAB.All);
+
+const clickTabHandler = (tab: string) => {
+  selectedTab.value = tab;
 };
 
 onBeforeMount(() => {

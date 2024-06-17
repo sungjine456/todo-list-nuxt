@@ -17,7 +17,12 @@
       </template>
       <template v-else>
         <div class="work">
-          <p @click="checkWork(key)">{{ workMap.get(key)?.work }}</p>
+          <p class="title">
+            {{ printTitle(key) }}
+          </p>
+          <p class="body" @click="checkWork(key)">
+            {{ workMap.get(key)?.work }}
+          </p>
           <div
             v-if="workMap.get(key)?.checked"
             class="check"
@@ -52,6 +57,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { type WorkItem } from "~/utils/WorkList";
 
 const props = defineProps({
+  onlyMemo: Boolean,
   targetDate: Dayjs
 });
 const emit = defineEmits(["addOrRemoveWork"]);
@@ -118,24 +124,40 @@ const clickDown = (index: number) => {
   }
 };
 
+const printTitle = (index: number): string => {
+  const work = workMap.value.get(index);
+
+  if (work && work.date) {
+    return dayjs(work.date).format("YYYY-MM-DD");
+  } else {
+    return "메모";
+  }
+};
+
 const setMap = (newMap: Map<number, WorkItem>) => {
-  const date: Dayjs | undefined =
-    targetedDate.value && dayjs(targetedDate.value);
-  const filteredMap = new Map<number, WorkItem>();
+  if (!props.onlyMemo && !targetedDate.value) {
+    workMap.value = newMap;
+  } else {
+    const date: Dayjs | undefined =
+      targetedDate.value && dayjs(targetedDate.value);
+    const filteredMap = new Map<number, WorkItem>();
 
-  newMap.forEach((v, k) => {
-    const d: Dayjs | undefined = v.date && dayjs(v.date);
+    newMap.forEach((v, k) => {
+      const d: Dayjs | undefined = v.date && dayjs(v.date);
 
-    if (
-      (!d && d === date) ||
-      (d?.year?.() === date?.year?.() &&
-        d?.month?.() === date?.month?.() &&
-        d?.date?.() === date?.date?.())
-    )
-      filteredMap.set(k, v);
-  });
+      if (
+        (!d && d === date) ||
+        (d?.year?.() === date?.year?.() &&
+          d?.month?.() === date?.month?.() &&
+          d?.date?.() === date?.date?.())
+      ) {
+        filteredMap.set(k, v);
+      }
+    });
 
-  workMap.value = filteredMap;
+    workMap.value = filteredMap;
+  }
+
   keys.value = Array.from(workMap.value.keys()).reverse();
 };
 
@@ -178,7 +200,6 @@ watch(
   display: flex;
   position: relative;
   justify-content: space-between;
-  height: 24px;
 
   .work {
     border: solid white 1px;
@@ -190,26 +211,37 @@ watch(
     }
 
     p {
-      width: 175px;
-      height: 22px;
       margin: 0;
+
+      &.title {
+        color: gray;
+        font-size: 8px;
+      }
+
+      &.body {
+        width: 185px;
+        height: 24px;
+        font-size: 22px;
+        line-height: 1;
+      }
     }
 
     .check {
       position: absolute;
-      border: 1px solid #6ec6fb;
-      width: 175px;
-      top: 11px;
+      border: 2px solid #6ec6fb;
+      width: 181px;
+      top: 22px;
     }
   }
 
   input {
-    width: 170px;
+    width: 180px;
   }
 
   .buttons {
     display: flex;
     position: relative;
+    align-items: center;
 
     .arrows {
       display: flex;
