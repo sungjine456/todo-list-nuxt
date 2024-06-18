@@ -1,6 +1,6 @@
 <template>
-  <div class="background" @click="closeModal">
-    <div class="main">
+  <modal-wrapper @close-modal="emit('closeModal')">
+    <template #main>
       <div class="header">
         <span :class="{ can: isMonth }" @click="yearHandler">{{
           printYears()
@@ -19,12 +19,13 @@
           >{{ index }}</span
         >
       </div>
-    </div>
-  </div>
+    </template>
+  </modal-wrapper>
 </template>
 
 <script lang="ts" setup>
 import dayjs, { Dayjs } from "dayjs";
+import ModalWrapper from "./ModalWrapper.vue";
 
 const props = defineProps({ year: { type: Number, required: true } });
 
@@ -77,86 +78,58 @@ const chooseDate = (date: number) => {
     startNum.value = 1;
   }
 };
-
-const closeModal = (event: MouseEvent) => {
-  if (!event) {
-    emit("closeModal");
-  } else if ((event.target as Element).classList.contains("background")) {
-    emit("closeModal");
-  }
-};
 </script>
 
 <style lang="scss" scoped>
-.background {
+.header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: rgba(0, 0, 0, 0.35);
+  margin: 0 15px;
+  height: 44px;
 
-  .main {
-    width: 285px;
-    height: 200px;
-    background-color: white;
+  span {
+    font-size: 24px;
+    cursor: default;
+
+    &.can:hover {
+      cursor: pointer;
+      color: rgb(110, 110, 110);
+    }
+  }
+
+  button {
+    width: 20px;
+    height: 20px;
+    padding: 0;
     border: 1px solid black;
     border-radius: 15px;
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 0 15px;
-      height: 44px;
-
-      span {
-        font-size: 24px;
-        cursor: default;
-
-        &.can:hover {
-          cursor: pointer;
-          color: rgb(110, 110, 110);
-        }
-      }
-
-      button {
-        width: 20px;
-        height: 20px;
-        padding: 0;
-        border: 1px solid black;
-        border-radius: 15px;
-
-        &:first-child {
-          margin-right: 5px;
-        }
-      }
+    &:first-child {
+      margin-right: 5px;
     }
+  }
+}
 
-    .body {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: end;
+.body {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
 
-      .item {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 67.2px;
-        height: 48px;
-        border: 2px solid rgb(204, 204, 204);
-        border-radius: 15px;
-        cursor: pointer;
-        background-color: rgb(204, 204, 204);
+  .item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 67.2px;
+    height: 48px;
+    border: 2px solid rgb(204, 204, 204);
+    border-radius: 15px;
+    cursor: pointer;
+    background-color: rgb(204, 204, 204);
 
-        &:hover {
-          background-color: rgb(140, 140, 140);
-          border-color: rgb(41, 223, 255);
-        }
-      }
+    &:hover {
+      background-color: rgb(140, 140, 140);
+      border-color: rgb(41, 223, 255);
     }
   }
 }

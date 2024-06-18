@@ -48,6 +48,7 @@
 
 <script lang="ts" setup>
 import dayjs, { Dayjs } from "dayjs";
+import CalendarModal from "./modals/CalendarModal.vue";
 
 interface Progress {
   checks: number;
