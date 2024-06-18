@@ -181,7 +181,7 @@ const syncDatesWithWork = () => {
 const printDailyProgress = (day: number): string => {
   const w = dailyProgresList.value.get(day);
 
-  return w ? `${w.checks}/${w.works}` : "";
+  return w ? `${w.works - w.checks}/${w.works}` : "";
 };
 
 const closeModal = () => {

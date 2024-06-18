@@ -1,9 +1,24 @@
 <template>
   <main>
     <div class="tabs">
-      <button @click="clickTabHandler(TAB.All)">전체</button>
-      <button @click="clickTabHandler(TAB.Memo)">메모</button>
-      <button @click="clickTabHandler(TAB.Work)">할 일</button>
+      <button
+        :class="{ selected: selectedTab === TAB.All }"
+        @click="clickTabHandler(TAB.All)"
+      >
+        전체
+      </button>
+      <button
+        :class="{ selected: selectedTab === TAB.Memo }"
+        @click="clickTabHandler(TAB.Memo)"
+      >
+        메모
+      </button>
+      <button
+        :class="{ selected: selectedTab === TAB.Work }"
+        @click="clickTabHandler(TAB.Work)"
+      >
+        할 일
+      </button>
     </div>
     <div class="body">
       <TodoList v-if="selectedTab === TAB.All" />
@@ -45,6 +60,10 @@ main {
 
   button {
     flex: 1;
+
+    &.selected {
+      background-color: rgb(169, 198, 211);
+    }
   }
 }
 </style>

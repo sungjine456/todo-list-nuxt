@@ -5,7 +5,7 @@
       <button @click="add">추가</button>
     </div>
     <div v-if="!workMap.size">
-      <p class="empty">비었습니다.</p>
+      <p class="empty">등록된 내용이 없습니다.</p>
     </div>
     <div v-for="(key, i) in keys" :key="key" class="item">
       <template v-if="indexToUpdate === key">
@@ -127,11 +127,7 @@ const clickDown = (index: number) => {
 const printTitle = (index: number): string => {
   const work = workMap.value.get(index);
 
-  if (work && work.date) {
-    return dayjs(work.date).format("YYYY-MM-DD");
-  } else {
-    return "메모";
-  }
+  return work && work.date ? dayjs(work.date).format("YYYY-MM-DD") : "메모";
 };
 
 const setMap = (newMap: Map<number, WorkItem>) => {
