@@ -1,9 +1,11 @@
 <template>
   <div class="calendar">
     <div class="handler">
-      <button @click="calculateCalender(-1)">&lt;</button>
-      {{ targetDate.format("YYYY년 MM월") }}
-      <button @click="calculateCalender(1)">&gt;</button>
+      <button @click="addMonth(-1)">&lt;</button>
+      <span @click="openedModal = true">{{
+        targetDate.format("YYYY년 MM월")
+      }}</span>
+      <button @click="addMonth(1)">&gt;</button>
     </div>
     <table>
       <thead>
@@ -35,6 +37,13 @@
       </tbody>
     </table>
   </div>
+
+  <calendar-modal
+    v-if="openedModal"
+    :year="targetDate.year()"
+    @close-modal="closeModal()"
+    @choose-date="chooseDateHandler"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -55,9 +64,15 @@ const targetDate = ref<Dayjs>(now);
 const monthStartDay = ref<number>(0);
 const dailyProgresList = ref<Map<number, Progress>>(new Map());
 
-const calculateCalender = (month: number = 0) => {
+const openedModal = ref<boolean>(false);
+
+const addMonth = (month: number) => {
   targetDate.value = targetDate.value.add(month, "month");
 
+  calculateCalender();
+};
+
+const calculateCalender = () => {
   const thisMonth = targetDate.value.set("date", 1);
   const previousMonth = targetDate.value.add(-1, "month");
 
@@ -169,6 +184,16 @@ const printDailyProgress = (day: number): string => {
   return w ? `${w.checks}/${w.works}` : "";
 };
 
+const closeModal = () => {
+  openedModal.value = false;
+};
+
+const chooseDateHandler = (date: Dayjs) => {
+  targetDate.value = date;
+  calculateCalender();
+  closeModal();
+};
+
 defineExpose({ syncDatesWithWork });
 
 onMounted(() => {
@@ -192,6 +217,14 @@ onMounted(() => {
 
     button {
       margin: 0 5px;
+    }
+
+    span {
+      cursor: pointer;
+
+      &:hover {
+        color: rgb(110, 110, 110);
+      }
     }
   }
 
