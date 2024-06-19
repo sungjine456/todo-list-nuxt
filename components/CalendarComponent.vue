@@ -55,7 +55,7 @@ interface Progress {
   works: number;
 }
 
-const emit = defineEmits(["changedTarget"]);
+const emit = defineEmits<{ (e: "changedTarget", valeu: Dayjs): void }>();
 
 const days = ["일", "월", "화", "수", "목", "금", "토"];
 const now = dayjs();
@@ -208,6 +208,7 @@ onMounted(() => {
   flex-direction: column;
   border: 1px solid gray;
   border-radius: 7px;
+  margin-bottom: 10px;
 
   .handler {
     display: flex;

@@ -4,7 +4,7 @@
     <TodoList
       style="margin-top: 10px"
       :target-date="targetDate"
-      @add-or-remove-work="addOrRemoveWork"
+      @update-work="updateWork"
     />
   </div>
 </template>
@@ -19,7 +19,7 @@ const changeTarget = (date: Dayjs) => {
   targetDate.value = date;
 };
 
-const addOrRemoveWork = () => {
+const updateWork = () => {
   calendarRef.value.syncDatesWithWork();
 };
 </script>

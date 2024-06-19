@@ -32,7 +32,7 @@ const closeModal = (event: MouseEvent) => {
 
   .main {
     width: 285px;
-    height: 200px;
+    min-height: 200px;
     background-color: white;
     border: 1px solid black;
     border-radius: 15px;

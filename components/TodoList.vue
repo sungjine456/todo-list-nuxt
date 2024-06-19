@@ -8,97 +8,100 @@
       <p class="empty">등록된 내용이 없습니다.</p>
     </div>
     <div v-for="(key, i) in keys" :key="key" class="item">
-      <template v-if="indexToUpdate === key">
-        <input v-model="updatedWork" />
+      <div class="work">
+        <p class="title">
+          {{ printTitle(key) }}
+        </p>
+        <p class="body" @click="checkWork(key)">
+          {{ workMap.get(key)?.work }}
+        </p>
+        <div
+          v-if="workMap.get(key)?.checked"
+          class="check"
+          @click="checkWork(key)"
+        ></div>
+      </div>
+      <div v-show="indexToUpdate < 0" class="buttons">
         <div>
-          <button @click="update(key)">확인</button>
-          <button @click="cancelUpdate()">취소</button>
+          <button @click="openModal(key)">수정</button>
+          <button @click="remove(key)">삭제</button>
         </div>
-      </template>
-      <template v-else>
-        <div class="work">
-          <p class="title">
-            {{ printTitle(key) }}
-          </p>
-          <p class="body" @click="checkWork(key)">
-            {{ workMap.get(key)?.work }}
-          </p>
-          <div
-            v-if="workMap.get(key)?.checked"
-            class="check"
-            @click="checkWork(key)"
-          ></div>
+        <div class="arrows">
+          <button class="arrow" :disabled="i === 0" @click="clickUp(i)">
+            ↑
+          </button>
+          <button
+            class="arrow"
+            :disabled="i === workMap.size - 1"
+            @click="clickDown(i)"
+          >
+            ↓
+          </button>
         </div>
-        <div v-show="indexToUpdate < 0" class="buttons">
-          <div>
-            <button @click="showUpdate(key)">수정</button>
-            <button @click="remove(key)">삭제</button>
-          </div>
-          <div class="arrows">
-            <button class="arrow" :disabled="i === 0" @click="clickUp(i)">
-              ↑
-            </button>
-            <button
-              class="arrow"
-              :disabled="i === workMap.size - 1"
-              @click="clickDown(i)"
-            >
-              ↓
-            </button>
-          </div>
-        </div>
-      </template>
+      </div>
     </div>
   </div>
+
+  <update-modal
+    v-if="openedModal"
+    :work-item="updatedWorkItem!"
+    @close-modal="closeModal"
+    @update="update"
+  />
 </template>
 
 <script setup lang="ts">
 import dayjs, { Dayjs } from "dayjs";
 import { type WorkItem } from "~/utils/WorkList";
+import UpdateModal from "./modals/UpdateModal.vue";
 
 const props = defineProps({
   onlyMemo: Boolean,
   targetDate: Dayjs
 });
-const emit = defineEmits(["addOrRemoveWork"]);
+const emit = defineEmits(["updateWork"]);
 
 const work = ref<string>("");
-const updatedWork = ref<string>("");
+const updatedWorkItem = ref<WorkItem>();
 const indexToUpdate = ref<number>(-1);
 const targetedDate = ref<Dayjs | undefined>(props.targetDate);
 const workMap = ref<Map<number, WorkItem>>(new Map());
 const keys = ref<number[]>([]);
+
+const openedModal = ref<boolean>(false);
 
 const add = () => {
   setMap(useWorkList().value.add(work.value, targetedDate.value));
 
   work.value = "";
 
-  emit("addOrRemoveWork");
+  emit("updateWork");
 };
 
 const remove = (index: number) => {
   if (window.confirm("삭제 하시겠습니까?")) {
     setMap(useWorkList().value.remove(index));
 
-    emit("addOrRemoveWork");
+    emit("updateWork");
   }
 };
 
-const update = (index: number) => {
-  const work = useWorkList().value.get(index);
-  work.work = updatedWork.value;
-  setMap(useWorkList().value.update(index, work));
-  indexToUpdate.value = -1;
-  updatedWork.value = "";
+const update = (updatedWork: WorkItem) => {
+  setMap(useWorkList().value.update(indexToUpdate.value, updatedWork));
+
+  emit("updateWork");
+
+  closeModal();
 };
 
-const showUpdate = (index: number) => {
+const openModal = (index: number) => {
+  updatedWorkItem.value = useWorkList().value.get(index);
+  openedModal.value = true;
   indexToUpdate.value = index;
-  updatedWork.value = workMap.value.get(index)?.work ?? "";
 };
 
-const cancelUpdate = () => {
+const closeModal = () => {
+  openedModal.value = false;
   indexToUpdate.value = -1;
 };
 
@@ -106,6 +109,7 @@ const checkWork = (index: number) => {
   const work = useWorkList().value.get(index);
   work.checked = !work.checked;
   setMap(useWorkList().value.update(index, work));
+  emit("updateWork");
 };
 
 const clickUp = (index: number) => {
