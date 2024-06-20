@@ -8,11 +8,11 @@
       <p class="empty">등록된 내용이 없습니다.</p>
     </div>
     <div v-for="(key, i) in keys" :key="key" class="item">
-      <div class="work">
+      <div class="work" @click="checkWork(key)">
         <p class="title">
           {{ printTitle(key) }}
         </p>
-        <p class="body" @click="checkWork(key)">
+        <p class="body">
           {{ workMap.get(key)?.work }}
         </p>
         <div
