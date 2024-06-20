@@ -25,9 +25,14 @@
         <label for="work">할 일 : </label>
         <input id="work" v-model="work" type="text" />
       </div>
-      <div v-if="type === TYPE.Date">
-        <calendar-component @changed-target="selectedDate" />
-      </div>
+      <show-and-hide :show="type === TYPE.Date">
+        <template #main>
+          <calendar-component
+            :hide-progress="true"
+            @changed-target="selectedDate"
+          />
+        </template>
+      </show-and-hide>
       <div class="buttons">
         <button @click="update">수정</button>
         <button @click="emit('closeModal')">취소</button>
@@ -39,6 +44,7 @@
 <script lang="ts" setup>
 import { type Dayjs } from "dayjs";
 import ModalWrapper from "./ModalWrapper.vue";
+import ShowAndHide from "../animations/ShowAndHide.vue";
 import { type WorkItem } from "~/utils/WorkList";
 
 const TYPE = {

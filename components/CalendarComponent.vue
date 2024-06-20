@@ -55,6 +55,7 @@ interface Progress {
   works: number;
 }
 
+const props = defineProps({ hideProgress: Boolean });
 const emit = defineEmits<{ (e: "changedTarget", valeu: Dayjs): void }>();
 
 const days = ["일", "월", "화", "수", "목", "금", "토"];
@@ -180,6 +181,10 @@ const syncDatesWithWork = () => {
 };
 
 const printDailyProgress = (day: number): string => {
+  if (props.hideProgress) {
+    return "";
+  }
+
   const w = dailyProgresList.value.get(day);
 
   return w ? `${w.works - w.checks}/${w.works}` : "";
