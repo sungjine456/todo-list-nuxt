@@ -40,14 +40,14 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <update-modal
-    v-if="openedModal"
-    :work-item="updatedWorkItem!"
-    @close-modal="closeModal"
-    @update="update"
-  />
+    <update-modal
+      v-if="openedModal"
+      :work-item="updatedWorkItem!"
+      @close-modal="closeModal"
+      @update="update"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
