@@ -15,6 +15,8 @@ const closeModal = (event: MouseEvent) => {
   } else if ((event.target as Element).classList.contains("background")) {
     emit("closeModal");
   }
+
+  event.stopPropagation();
 };
 </script>
 
