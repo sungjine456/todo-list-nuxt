@@ -28,7 +28,7 @@
                 targetDate.year() === now.year(),
               target: day === targetDate.date()
             }"
-            @click="(e) => changeTarget(e.target as Element, day)"
+            @click="(e) => changeTarget(e.currentTarget as Element, day)"
           >
             <p>{{ day }}</p>
             <p>{{ printDailyProgress(day) }}</p>
@@ -69,7 +69,7 @@ const dailyProgresList = ref<Map<number, Progress>>(new Map());
 const openedModal = ref<boolean>(false);
 
 const addMonth = (month: number) => {
-  targetDate.value = targetDate.value.add(month, "month");
+  setTargetDate(targetDate.value.add(month, "month"));
 
   calculateCalender();
 };
@@ -86,8 +86,6 @@ const calculateCalender = () => {
   );
 
   syncDatesWithWork();
-
-  emit("changedTarget", dayjs(targetDate.value));
 };
 
 const getMonthOfDays = (
@@ -141,11 +139,16 @@ const getMonthOfDays = (
 };
 
 const changeTarget = (t: Element | null, day: number) => {
-  // TODO: 이전 달이나 다음 달의 날짜를 누르면 해당 달로 이동하도록 수정하면 좋을 듯
   if (!t?.classList.contains("gray")) {
-    targetDate.value = targetDate.value.set("date", day);
+    setTargetDate(targetDate.value.set("date", day));
+  } else {
+    if (day < 15) {
+      setTargetDate(targetDate.value.add(1, "month").set("date", day));
+    } else {
+      setTargetDate(targetDate.value.add(-1, "month").set("date", day));
+    }
 
-    emit("changedTarget", dayjs(targetDate.value));
+    calculateCalender();
   }
 };
 
@@ -195,9 +198,17 @@ const closeModal = () => {
 };
 
 const chooseDateHandler = (date: Dayjs) => {
-  targetDate.value = date;
+  setTargetDate(date);
+
   calculateCalender();
+
   closeModal();
+};
+
+const setTargetDate = (date: Dayjs) => {
+  targetDate.value = date;
+
+  emit("changedTarget", dayjs(targetDate.value));
 };
 
 defineExpose({ syncDatesWithWork });
@@ -245,7 +256,6 @@ onMounted(() => {
       position: relative;
 
       &.gray {
-        cursor: default;
         color: gray !important;
         border-color: white !important;
       }
