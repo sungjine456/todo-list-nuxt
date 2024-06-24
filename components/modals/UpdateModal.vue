@@ -25,7 +25,7 @@
         <label for="work">할 일 : </label>
         <input id="work" v-model="work" type="text" />
       </div>
-      <show-and-hide :show="type === TYPE.Date">
+      <show-and-hide :show="type === TYPE.Date" style="padding: 0px 10px">
         <template #main>
           <calendar-component
             :hide-progress="true"
@@ -93,9 +93,9 @@ const selectedDate = (dayjs: Dayjs) => {
 .buttons {
   display: flex;
   justify-content: flex-end;
-  margin-right: 10px;
+  margin: 0 10px 10px 0;
 
-  button {
+  button:first-child {
     margin-right: 10px;
   }
 }

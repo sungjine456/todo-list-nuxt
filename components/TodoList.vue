@@ -7,26 +7,24 @@
     <div v-if="!workMap.size">
       <p class="empty">등록된 내용이 없습니다.</p>
     </div>
-    <div v-for="(key, i) in keys" :key="key" class="item">
-      <div class="work" @click="checkWork(key)">
-        <p class="title">
-          {{ printTitle(key) }}
-        </p>
-        <p class="body">
-          {{ workMap.get(key)?.work }}
-        </p>
-        <div
-          v-if="workMap.get(key)?.checked"
-          class="check"
-          @click="checkWork(key)"
-        ></div>
-      </div>
-      <div v-show="indexToUpdate < 0" class="buttons">
-        <div>
+    <div class="items">
+      <div v-for="(key, i) in keys" :key="key" class="item">
+        <div class="work" @click="checkWork(key)">
+          <p class="title">
+            {{ printTitle(key) }}
+          </p>
+          <p class="body">
+            {{ workMap.get(key)?.work }}
+          </p>
+          <div
+            v-if="workMap.get(key)?.checked"
+            class="check"
+            @click="checkWork(key)"
+          ></div>
+        </div>
+        <div v-show="indexToUpdate < 0" class="buttons">
           <button @click="openModal(key)">수정</button>
           <button @click="remove(key)">삭제</button>
-        </div>
-        <div class="arrows">
           <button class="arrow" :disabled="i === 0" @click="clickUp(i)">
             ↑
           </button>
@@ -196,67 +194,63 @@ watch(
   height: 24px;
 }
 
-.item {
-  display: flex;
-  position: relative;
-  justify-content: space-between;
+.items {
+  width: 341px;
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
 
-  .work {
-    border: solid white 1px;
-    border-radius: 3px;
-
-    &:hover {
-      border: solid black 1px;
-      cursor: pointer;
-    }
-
-    p {
-      margin: 0;
-
-      &.title {
-        color: gray;
-        font-size: 8px;
-      }
-
-      &.body {
-        width: 185px;
-        height: 24px;
-        font-size: 22px;
-        line-height: 1;
-      }
-    }
-
-    .check {
-      position: absolute;
-      border: 2px solid #6ec6fb;
-      width: 181px;
-      top: 22px;
-    }
-  }
-
-  input {
-    width: 180px;
-  }
-
-  .buttons {
+  .item {
     display: flex;
     position: relative;
-    align-items: center;
+    justify-content: start;
 
-    .arrows {
+    .work {
+      width: 222px;
+      border: solid white 1px;
+      border-radius: 3px;
+
+      &:hover {
+        border-color: black;
+        cursor: pointer;
+      }
+
+      p {
+        margin: 0;
+
+        &.title {
+          color: gray;
+          font-size: 8px;
+        }
+
+        &.body {
+          height: 24px;
+          font-size: 22px;
+          line-height: 1;
+        }
+      }
+
+      .check {
+        position: absolute;
+        border: 2px solid #6ec6fb;
+        width: 210px;
+        top: 22px;
+      }
+    }
+
+    .buttons {
       display: flex;
       align-items: center;
-      height: 100%;
-      position: absolute;
-      right: -45px;
 
-      .arrow {
-        border-radius: 10px;
-        width: 20px;
-        height: 20px;
+      button {
         padding: 0;
-        font-size: 13px;
-        line-height: 0;
+
+        &.arrow {
+          border-radius: 10px;
+          width: 19px;
+          height: 19px;
+          font-size: 13px;
+        }
       }
     }
   }
