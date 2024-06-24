@@ -1,43 +1,38 @@
-# 목표
+# todo-list-nuxt
 
-간단한 Todo List를 만들며 Nuxt를 가볍게 알아보기.
+Nuxt에 대해 가볍게 사용해보며 만들어보는 Todo List.
 
-# Nuxt 3 Minimal Starter
+## 사용한 기술 목록
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+- Nuxt 3 - Composition API
+- SCSS
+- Typescript
+
+## Nuxt 공식 문서
+
+- [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction)
+- [Deployment documentation](https://nuxt.com/docs/getting-started/deployment)
 
 ## Setup
 
-Make sure to install the dependencies:
-
-```bash
-# npm
+```
 npm install
 ```
 
-## Development Server
+## Development
 
-Start the development server on `http://localhost:3000`:
+개발 포트: `3000`
 
-```bash
-# npm
+```
 npm run dev
 ```
 
 ## Production
 
-Build the application for production:
-
-```bash
-# npm
+```
 npm run build
 ```
 
-Locally preview production build:
-
-```bash
-# npm
+```
 npm run preview
 ```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
